@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HP-12C Study — Matemática Financeira para ADM</title>
+<style>
+:root {
+  --cream: #F5F0E8;
+  --cream2: #EDE8DC;
+  --cream3: #E5DFD2;
+  --ink: #1A1814;
+  --ink2: #3D3A35;
+  --ink3: #7A7570;
+  --gold: #C8A96E;
+  --gold2: #E8C98E;
+  --gold-dark: #8B6E3E;
+  --red: #C0392B;
+  --green: #2E7D52;
+  --border: rgba(26,24,20,0.12);
+  --border2: rgba(26,24,20,0.06);
+  --shadow: 0 2px 20px rgba(26,24,20,0.08);
+  --shadow2: 0 8px 40px rgba(26,24,20,0.14);
+  --font-mono: 'Courier New', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200,169,110,0.15) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231A1814' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(245,240,232,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 56px;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-chip {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: -0.5px;
+}
+.nav-name { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+.nav-name em { color: var(--gold-dark); font-style: italic; }
+.nav-links { display: flex; gap: 2px; }
+.nav-btn {
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 13px; font-family: Arial, sans-serif;
+  color: var(--ink2); background: none; border: none;
+  cursor: pointer; transition: all 0.15s;
+}
+.nav-btn:hover { background: var(--cream2); color: var(--ink); }
+.nav-btn.active { background: var(--ink); color: var(--gold); }
+
+/* ── LAYOUT ── */
+main { position: relative; z-index: 1; }
+.section { max-width: 760px; margin: 0 auto; padding: 64px 24px; }
+
+/* ── HERO ── */
+.hero {
+  max-width: 760px; margin: 0 auto;
+  padding: 88px 24px 72px; text-align: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--ink); color: var(--gold);
+  font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 20px; margin-bottom: 28px;
+}
+.hero h1 {
+  font-size: clamp(44px, 7vw, 64px);
+  line-height: 1.04; letter-spacing: -2px; margin-bottom: 18px;
+}
+.hero h1 em { color: var(--gold-dark); font-style: italic; }
+.hero-sub { font-size: 16px; color: var(--ink3); max-width: 380px; margin: 0 auto 18px; line-height: 1.7; }
+.hero-dedication {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--ink3); margin-bottom: 40px;
+  background: rgba(200,169,110,0.1); border: 0.5px solid rgba(200,169,110,0.3);
+  padding: 6px 16px; border-radius: 20px;
+}
+.hero-dedication strong { color: var(--gold-dark); font-weight: 500; }
+.hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--ink); color: var(--gold);
+  padding: 14px 28px; border-radius: 14px;
+  font-size: 15px; font-weight: 500; font-family: Arial, sans-serif;
+  border: none; cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,24,20,0.2); }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; color: var(--ink2);
+  padding: 14px 24px; border-radius: 14px;
+  font-size: 15px; font-family: Arial, sans-serif;
+  border: 0.5px solid var(--border); cursor: pointer; transition: all 0.15s;
+}
+.btn-secondary:hover { background: var(--cream2); border-color: var(--gold); }
+.hero-stats {
+  display: flex; gap: 40px; justify-content: center;
+  margin-top: 56px; padding-top: 40px;
+  border-top: 0.5px solid var(--border); flex-wrap: wrap;
+}
+.hs-num { font-size: 30px; font-weight: 700; letter-spacing: -1px; color: var(--ink); }
+.hs-label { font-size: 11px; color: var(--ink3); margin-top: 2px; letter-spacing: 0.5px; }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  max-width: 760px; margin: 0 auto; padding: 0 24px;
+}
+.divider::before, .divider::after { content:''; flex:1; height:0.5px; background:var(--border); }
+.divider span { color:var(--gold); font-size:11px; white-space:nowrap; letter-spacing:1.5px; }
+
+/* ── SECTION HEADER ── */
+.sec-header { margin-bottom: 36px; }
+.sec-eyebrow {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 10px;
+}
+.sec-eyebrow::before { content:'◆'; font-size:7px; color:var(--gold); }
+.sec-title { font-size: 26px; letter-spacing:-0.5px; color:var(--ink); margin-bottom:6px; }
+.sec-sub { font-size: 14px; color:var(--ink3); line-height:1.6; }
+
+/* ── QUIZ CONFIG ── */
+.q-label { font-size:11px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink3); margin-bottom:12px; }
+.level-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:28px; }
+.level-card {
+  background:white; border:0.5px solid var(--border);
+  border-radius:14px; padding:16px 10px 14px;
+  cursor:pointer; text-align:center;
+  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  user-select:none;
+}
+.level-card:hover { transform:translateY(-3px); box-shadow:var(--shadow2); }
+.level-card.active {
+  background:var(--ink); border-color:var(--ink);
+  transform:translateY(-3px); box-shadow:0 8px 30px rgba(26,24,20,0.25);
+}
+.level-card.active .lc-num { color:var(--gold); }
+.level-card.active .lc-name { color:var(--cream); }
+.level-card.active .lc-desc { color:var(--ink3); }
+.level-card.active .lc-stars { color:var(--gold); }
+.lc-num { font-size:28px; color:var(--ink); line-height:1; margin-bottom:4px; }
+.lc-name { font-size:12px; font-weight:500; color:var(--ink2); margin-bottom:3px; }
+.lc-desc { font-size:10px; color:var(--ink3); line-height:1.3; }
+.lc-stars { font-size:10px; color:var(--gold); margin-top:8px; letter-spacing:1px; }
+
+.topics { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
+.topic-chip {
+  background:white; border:0.5px solid var(--border);
+  border-radius:20px; padding:6px 14px;
+  font-size:13px; color:var(--ink2); cursor:pointer;
+  transition:all 0.15s; user-select:none;
+}
+.topic-chip:hover { border-color:var(--gold); color:var(--gold-dark); }
+.topic-chip.active { background:var(--gold); border-color:var(--gold); color:white; font-weight:500; }
+
+.generate-btn {
+  width:100%; padding:16px; background:var(--ink); color:var(--gold);
+  border:none; border-radius:14px; font-family:Arial,sans-serif;
+  font-size:15px; font-weight:500; cursor:pointer; margin-bottom:32px;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:all 0.2s; position:relative; overflow:hidden;
+}
+.generate-btn::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,transparent,rgba(200,169,110,0.1),transparent);
+  transform:translateX(-100%); transition:transform 0.5s;
+}
+.generate-btn:hover::after { transform:translateX(100%); }
+.generate-btn:hover { background:#2A2620; box-shadow:var(--shadow2); }
+.generate-btn:disabled { opacity:.5; cursor:not-allowed; }
+.btn-spinner {
+  width:18px; height:18px; border:2px solid rgba(200,169,110,0.3);
+  border-top-color:var(--gold); border-radius:50%;
+  animation:spin 0.7s linear infinite; display:none;
+}
+.generate-btn.loading .btn-spinner { display:block; }
+.generate-btn.loading .btn-text { display:none; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── QUESTION AREA ── */
+.q-section { display:none; }
+.q-section.visible { display:block; animation:fadeUp 0.4s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.score-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.score-pills { display:flex; gap:8px; }
+.score-pill { padding:5px 12px; border-radius:20px; font-size:12px; font-weight:500; }
+.pill-c { background:rgba(46,125,82,0.1); color:var(--green); }
+.pill-w { background:rgba(192,57,43,0.1); color:var(--red); }
+.pill-r { background:var(--cream2); color:var(--ink3); }
+.prog-bar { width:100%; height:3px; background:var(--border2); border-radius:2px; margin-bottom:24px; overflow:hidden; }
+.prog-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2)); border-radius:2px; transition:width 0.5s ease; }
+
+.q-card {
+  background:white; border:0.5px solid var(--border);
+  border-radius:20px; overflow:hidden; margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.q-card-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px; border-bottom:0.5px solid var(--border2);
+  background:linear-gradient(to right, rgba(200,169,110,0.05), transparent);
+}
+.q-meta { display:flex; align-items:center; gap:10px; }
+.q-badge {
+  background:var(--ink); color:var(--gold);
+  font-size:10px; font-weight:500; letter-spacing:1px; text-transform:uppercase;
+  padding:3px 9px; border-radius:6px;
+}
+.q-topic-lbl { font-size:12px; color:var(--ink3); }
+.q-num { font-size:13px; font-weight:500; color:var(--ink2); }
+.q-body { padding:28px 24px 20px; }
+.q-text { font-size:18px; line-height:1.5; color:var(--ink); margin-bottom:24px; }
+
+.options { display:flex; flex-direction:column; gap:10px; }
+.option {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:14px 18px; border-radius:12px;
+  border:0.5px solid var(--border); background:var(--cream2);
+  cursor:pointer; font-size:14px; color:var(--ink2);
+  text-align:left; font-family:Arial,sans-serif;
+  transition:all 0.15s; width:100%;
+}
+.option:hover:not(:disabled) { border-color:var(--gold); background:white; color:var(--ink); }
+.option:disabled { cursor:default; }
+.opt-letter {
+  width:26px; height:26px; border-radius:50%;
+  background:white; border:0.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:500; color:var(--ink2);
+  flex-shrink:0; transition:all 0.15s;
+}
+.option.correct { border-color:var(--green); background:rgba(46,125,82,0.06); }
+.option.correct .opt-letter { background:var(--green); color:white; border-color:var(--green); }
+.option.wrong { border-color:var(--red); background:rgba(192,57,43,0.06); color:var(--ink3); }
+.option.wrong .opt-letter { background:var(--red); color:white; border-color:var(--red); }
+
+.feedback {
+  margin-top:20px; padding:16px 20px;
+  font-size:14px; line-height:1.6; display:none;
+  animation:fadeUp 0.3s ease;
+}
+.feedback.show { display:block; }
+.fb-correct { background:rgba(46,125,82,0.07); border-left:3px solid var(--green); border-radius:0 12px 12px 0; color:var(--ink2); }
+.fb-wrong { background:rgba(192,57,43,0.07); border-left:3px solid var(--red); border-radius:0 12px 12px 0; color:var(--ink2); }
+.fb-title { font-weight:500; color:var(--ink); margin-bottom:6px; font-size:13px; }
+
+.next-btn {
+  padding:11px 24px; background:var(--gold);
+  border:none; border-radius:10px;
+  font-family:Arial,sans-serif; font-size:14px; font-weight:500; color:var(--ink);
+  cursor:pointer; display:none; transition:all 0.15s; margin-top:16px;
+}
+.next-btn:hover { background:var(--gold2); }
+.next-btn.show { display:inline-block; animation:fadeUp 0.3s ease; }
+
+/* ── RESULT ── */
+.result-screen {
+  display:none; text-align:center; padding:56px 32px;
+  background:white; border-radius:20px; border:0.5px solid var(--border);
+  box-shadow:var(--shadow2);
+}
+.result-screen.show { display:block; animation:fadeUp 0.4s ease; }
+.result-trophy { font-size:60px; margin-bottom:20px; }
+.result-title { font-size:32px; letter-spacing:-1px; color:var(--ink); margin-bottom:8px; }
+.result-sub { font-size:15px; color:var(--ink3); margin-bottom:32px; }
+.result-stats { display:flex; justify-content:center; gap:40px; margin-bottom:36px; }
+.rs-num { font-size:36px; font-weight:700; color:var(--ink); letter-spacing:-1px; }
+.rs-label { font-size:11px; color:var(--ink3); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+
+/* ── ERROR / SKELETON ── */
+.error-box {
+  background:rgba(192,57,43,0.07); border:0.5px solid rgba(192,57,43,0.3);
+  border-radius:12px; padding:14px 18px; font-size:13px;
+  color:var(--red); margin-bottom:16px; display:none;
+}
+.error-box.show { display:block; }
+.skel-card { background:white; border-radius:20px; border:0.5px solid var(--border); padding:28px 24px; margin-bottom:20px; display:none; }
+.skel-card.show { display:block; }
+.skel { background:var(--cream2); border-radius:6px; animation:shimmer 1.2s ease-in-out infinite; }
+.skel-title { height:22px; width:70%; margin-bottom:14px; }
+.skel-line { height:14px; margin-bottom:8px; }
+@keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+/* ── LOGIC SECTION ── */
+.tab-bar {
+  display:flex; border:0.5px solid var(--border); border-radius:12px;
+  overflow:hidden; margin-bottom:20px; background:var(--cream2);
+}
+.tab-btn {
+  flex:1; padding:10px 4px; font-size:13px; font-weight:500;
+  font-family:Arial,sans-serif; background:transparent; color:var(--ink3);
+  border:none; cursor:pointer; transition:background 0.15s,color 0.15s;
+}
+.tab-btn.active { background:white; color:var(--ink); box-shadow:0 1px 4px rgba(26,24,20,0.08); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; animation:fadeUp 0.3s ease; }
+
+.c-card { background:white; border:0.5px solid var(--border); border-radius:14px; padding:20px; margin-bottom:12px; }
+.c-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.c-icon {
+  width:40px; height:40px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; flex-shrink:0; background:var(--cream2);
+}
+.c-title { font-size:15px; font-weight:500; color:var(--ink); }
+.c-sub { font-size:12px; color:var(--ink3); margin-top:2px; }
+.c-body { font-size:13px; color:var(--ink3); line-height:1.6; }
+.c-body strong { color:var(--ink); }
+
+.formula-box {
+  background:var(--cream2); padding:12px 16px;
+  font-family:var(--font-mono); font-size:15px; color:var(--ink);
+  margin-bottom:10px; text-align:center;
+  border-left:3px solid var(--gold); border-radius:0 10px 10px 0;
+}
+.legend-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+.legend-pill {
+  display:inline-flex; align-items:center; gap:4px;
+  background:var(--cream2); border:0.5px solid var(--border);
+  border-radius:20px; padding:3px 10px; font-size:12px; color:var(--ink3);
+}
+.legend-pill strong { color:var(--ink); font-weight:500; }
+.insight {
+  font-size:13px; color:var(--ink3); background:var(--cream2);
+  border-radius:10px; padding:10px 12px; margin-top:10px; line-height:1.6;
+}
+.insight strong { color:var(--ink); font-weight:500; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.mini-card {
+  background:var(--cream2); border-radius:10px; padding:12px;
+}
+.mini-label { font-size:11px; color:var(--ink3); margin-bottom:4px; }
+.mini-val { font-size:12px; color:var(--ink); line-height:1.5; }
+.blue-border { border-left:3px solid #378ADD; border-radius:0 10px 10px 0; }
+.gold-border { border-left:3px solid var(--gold); border-radius:0 10px 10px 0; }
+
+.i-card { background:white; border:0.5px solid var(--border); border-radius:14px; padding:20px; margin-bottom:12px; }
+.slider-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.sl-label { font-size:12px; color:var(--ink3); width:130px; flex-shrink:0; }
+.sl-val { font-size:13px; font-weight:500; color:var(--ink); width:60px; text-align:right; flex-shrink:0; font-family:var(--font-mono); }
+input[type=range] { flex:1; accent-color:var(--gold); cursor:pointer; }
+.r-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+.r-cell { background:var(--cream2); border-radius:10px; padding:12px 14px; }
+.r-label { font-size:11px; color:var(--ink3); margin-bottom:4px; }
+.r-val { font-size:18px; font-weight:500; color:var(--ink); font-family:var(--font-mono); }
+.r-val.gold { color:var(--gold-dark); }
+.r-val.blue { color:#185FA5; }
+.r-val.red { color:var(--red); }
+.bar-cont { display:flex; flex-direction:column; gap:6px; margin-top:14px; }
+.bar-row { display:flex; align-items:center; gap:10px; }
+.bar-lbl { font-size:11px; color:var(--ink3); width:28px; text-align:right; flex-shrink:0; }
+.bar-track { flex:1; height:20px; background:var(--cream2); border-radius:4px; overflow:hidden; display:flex; }
+
+.mq-card { background:white; border:0.5px solid var(--border); border-radius:14px; padding:16px; margin-bottom:10px; }
+.mq-q { font-size:14px; color:var(--ink); margin-bottom:12px; line-height:1.5; }
+.mq-opts { display:flex; flex-direction:column; gap:6px; }
+.mq-opt {
+  padding:9px 12px; border-radius:10px; cursor:pointer;
+  font-size:13px; font-family:Arial,sans-serif;
+  border:0.5px solid var(--border); background:var(--cream2); color:var(--ink);
+  transition:background 0.15s; text-align:left; width:100%;
+}
+.mq-opt:hover:not(:disabled) { background:var(--cream3); }
+.mq-opt.correct { background:rgba(46,125,82,0.1); color:var(--green); border-color:var(--green); }
+.mq-opt.wrong { background:rgba(192,57,43,0.1); color:var(--red); border-color:var(--red); }
+.mq-fb {
+  font-size:12px; margin-top:10px; padding:10px 12px;
+  border-radius:10px; background:var(--cream2); line-height:1.5;
+  display:none; color:var(--ink3);
+}
+.mq-fb.show { display:block; }
+
+/* ── FOOTER ── */
+footer {
+  position:relative; z-index:1;
+  text-align:center; padding:56px 24px 64px;
+  border-top:0.5px solid var(--border);
+}
+.footer-heart { font-size:24px; margin-bottom:16px; }
+.footer-msg { font-size:16px; color:var(--ink2); margin-bottom:6px; }
+.footer-msg strong { color:var(--ink); font-weight:600; }
+.footer-sig { font-size:13px; color:var(--ink3); letter-spacing:0.5px; margin-bottom:20px; }
+.footer-sig em { color:var(--gold-dark); font-style:italic; font-weight:600; }
+.footer-deco { display:flex; align-items:center; gap:12px; justify-content:center; }
+.footer-deco::before, .footer-deco::after { content:''; width:40px; height:0.5px; background:var(--border); }
+.footer-small { font-size:11px; color:var(--ink3); opacity:.5; margin-top:12px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width:600px) {
+  nav { padding:0 16px; }
+  .nav-links .nav-btn:not(.active) { display:none; }
+  .hero { padding:60px 20px 48px; }
+  .section { padding:48px 20px; }
+  .level-grid { grid-template-columns:repeat(2,1fr); }
+  .level-card:nth-child(5) { grid-column:1/-1; }
+  .q-text { font-size:16px; }
+  .result-stats { gap:24px; }
+  .hero-stats { gap:24px; }
+  .two-col { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-chip">12C</div>
+    <div class="nav-name"><em>HP-12C</em> Study</div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="gotoSection('quiz',this)">Quiz</button>
+    <button class="nav-btn" onclick="gotoSection('logica',this)">Lógica</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-badge">◆ Matemática Financeira · ADM</div>
+  <h1>Domine a<br><em>HP-12C</em></h1>
+  <p class="hero-sub">Questões geradas por IA, calibradas ao seu nível, com explicações detalhadas de cada resposta.</p>
+  <div class="hero-dedication">Feito com carinho para <strong>Neidi</strong> arrasar na faculdade ❤️</div>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="gotoSection('quiz',null)">Começar quiz ↓</button>
+    <button class="btn-secondary" onclick="gotoSection('logica',null)">Ver a lógica</button>
+  </div>
+  <div class="hero-stats">
+    <div><div class="hs-num">5</div><div class="hs-label">Níveis</div></div>
+    <div><div class="hs-num">7</div><div class="hs-label">Tópicos</div></div>
+    <div><div class="hs-num">∞</div><div class="hs-label">Questões únicas</div></div>
+  </div>
+</div>
+
+<div class="divider"><span>◆ QUIZ COM IA ◆</span></div>
+
+<!-- ── QUIZ SECTION ── -->
+<div id="quiz" class="section">
+  <div class="sec-header">
+    <div class="sec-eyebrow">Quiz interativo</div>
+    <div class="sec-title">Questões no seu ritmo</div>
+    <div class="sec-sub">Escolha o nível e o tópico — a IA gera questões inéditas toda vez. Aprende errando, com feedback imediato.</div>
+  </div>
+
+  <div id="config-section">
+    <p class="q-label">Nível de dificuldade</p>
+    <div class="level-grid">
+      <div class="level-card active" onclick="selectLevel(1,this)">
+        <div class="lc-num">1</div>
+        <div class="lc-name">Iniciante</div>
+        <div class="lc-desc">Conceitos e definições</div>
+        <div class="lc-stars">★☆☆☆☆</div>
+      </div>
+      <div class="level-card" onclick="selectLevel(2,this)">
+        <div class="lc-num">2</div>
+        <div class="lc-name">Básico</div>
+        <div class="lc-desc">VP e VF simples</div>
+        <div class="lc-stars">★★☆☆☆</div>
+      </div>
+      <div class="level-card" onclick="selectLevel(3,this)">
+        <div class="lc-num">3</div>
+        <div class="lc-name">Intermediário</div>
+        <div class="lc-desc">PMT e taxas</div>
+        <div class="lc-stars">★★★☆☆</div>
+      </div>
+      <div class="level-card" onclick="selectLevel(4,this)">
+        <div class="lc-num">4</div>
+        <div class="lc-name">Avançado</div>
+        <div class="lc-desc">TIR, VPL e análise</div>
+        <div class="lc-stars">★★★★☆</div>
+      </div>
+      <div class="level-card" onclick="selectLevel(5,this)">
+        <div class="lc-num">5</div>
+        <div class="lc-name">Expert</div>
+        <div class="lc-desc">Prova de concurso</div>
+        <div class="lc-stars">★★★★★</div>
+      </div>
+    </div>
+
+    <p class="q-label">Tópico</p>
+    <div class="topics">
+      <div class="topic-chip active" onclick="selectTopic(this,'todos')">Todos</div>
+      <div class="topic-chip" onclick="selectTopic(this,'VP e VF')">Valor Presente / Futuro</div>
+      <div class="topic-chip" onclick="selectTopic(this,'PMT')">Prestações (Price)</div>
+      <div class="topic-chip" onclick="selectTopic(this,'taxas')">Taxas equivalentes</div>
+      <div class="topic-chip" onclick="selectTopic(this,'TIR e VPL')">TIR e VPL</div>
+      <div class="topic-chip" onclick="selectTopic(this,'amortização')">Amortização SAC/Price</div>
+      <div class="topic-chip" onclick="selectTopic(this,'desconto')">Desconto comercial</div>
+    </div>
+
+    <div class="error-box" id="error-box"></div>
+
+    <button class="generate-btn" id="generate-btn" onclick="startQuiz()">
+      <div class="btn-spinner"></div>
+      <span class="btn-text">✦ &nbsp; Gerar 5 questões</span>
+    </button>
+  </div>
+
+  <div class="skel-card" id="skeleton">
+    <div class="skel skel-title"></div>
+    <div class="skel skel-line"></div>
+    <div class="skel skel-line" style="width:62%"></div>
+    <div style="height:16px"></div>
+    <div class="skel skel-line" style="width:90%;height:18px;margin-bottom:10px"></div>
+    <div class="skel skel-line" style="width:75%;height:18px;margin-bottom:10px"></div>
+    <div class="skel skel-line" style="width:82%;height:18px;margin-bottom:10px"></div>
+    <div class="skel skel-line" style="width:68%;height:18px"></div>
+  </div>
+
+  <div class="q-section" id="q-section">
+    <div class="score-row">
+      <div class="score-pills">
+        <span class="score-pill pill-c" id="sc-c">✓ 0 certas</span>
+        <span class="score-pill pill-w" id="sc-w">✗ 0 erradas</span>
+      </div>
+      <span class="score-pill pill-r" id="sc-r">5 questões</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
+    <div id="q-container"></div>
+  </div>
+
+  <div class="result-screen" id="result-screen">
+    <div class="result-trophy" id="r-trophy">🏆</div>
+    <div class="result-title" id="r-title">Parabéns!</div>
+    <div class="result-sub" id="r-sub"></div>
+    <div class="result-stats">
+      <div><div class="rs-num" id="r-c">0</div><div class="rs-label">Certas</div></div>
+      <div><div class="rs-num" id="r-w">0</div><div class="rs-label">Erradas</div></div>
+      <div><div class="rs-num" id="r-p">0%</div><div class="rs-label">Acerto</div></div>
+    </div>
+    <button class="btn-primary" onclick="restart()">Novo quiz ↻</button>
+  </div>
+</div>
+
+<div class="divider"><span>◆ ENTENDA A LÓGICA ◆</span></div>
+
+<!-- ── LOGIC SECTION ── -->
+<div id="logica" class="section">
+  <div class="sec-header">
+    <div class="sec-eyebrow">Matemática financeira</div>
+    <div class="sec-title">A lógica por baixo dos botões</div>
+    <div class="sec-sub">Entenda as fórmulas que a HP-12C resolve — e por que cada uma funciona.</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab(this,'fundamentos')">Fundamentos</button>
+    <button class="tab-btn" onclick="showTab(this,'formulas')">Fórmulas</button>
+    <button class="tab-btn" onclick="showTab(this,'simulador')">Simulador</button>
+    <button class="tab-btn" onclick="showTab(this,'miniquiz')">Quiz rápido</button>
+  </div>
+
+  <!-- FUNDAMENTOS -->
+  <div class="tab-pane active" id="tab-fundamentos">
+    <div class="c-card">
+      <div class="c-head">
+        <div class="c-icon">⏳</div>
+        <div><div class="c-title">O princípio raiz: dinheiro tem valor no tempo</div><div class="c-sub">Tudo que a HP-12C faz parte daqui</div></div>
+      </div>
+      <div class="c-body">R$ 1.000 hoje <strong>não é igual</strong> a R$ 1.000 daqui a 1 ano. Por dois motivos simples:</div>
+      <div class="two-col" style="margin-top:10px">
+        <div class="mini-card blue-border"><div class="mini-label">Oportunidade</div><div class="mini-val">Dinheiro hoje pode ser investido e crescer. Você perde essa chance ao esperar.</div></div>
+        <div class="mini-card gold-border"><div class="mini-label">Risco</div><div class="mini-val">Receber no futuro tem incerteza. Pode não acontecer. Hoje é certo.</div></div>
+      </div>
+      <div class="insight"><strong>A regra de ouro:</strong> para comparar valores em momentos diferentes, você precisa <em>trazer tudo para o mesmo ponto no tempo</em>. É exatamente isso que VP, VF e PMT fazem.</div>
+    </div>
+
+    <div class="c-card">
+      <div class="c-head">
+        <div class="c-icon">📈</div>
+        <div><div class="c-title">Juros simples vs. juros compostos</div><div class="c-sub">A diferença que muda tudo</div></div>
+      </div>
+      <div class="two-col">
+        <div class="mini-card blue-border">
+          <div class="mini-label" style="color:#185FA5;font-weight:500">Simples</div>
+          <div style="font-family:var(--font-mono);font-size:13px;color:var(--ink);margin:6px 0">J = P × i × n</div>
+          <div class="mini-val">Juros sempre sobre o capital inicial. Linha reta.</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:6px">R$ 1.000 × 2% × 12 = R$ 240 de juros</div>
+        </div>
+        <div class="mini-card gold-border">
+          <div class="mini-label" style="color:var(--gold-dark);font-weight:500">Composto</div>
+          <div style="font-family:var(--font-mono);font-size:13px;color:var(--ink);margin:6px 0">VF = PV × (1+i)ⁿ</div>
+          <div class="mini-val">Juros sobre juros. Cresce exponencialmente.</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:6px">R$ 1.000 × (1,02)¹² = R$ 1.268,24</div>
+        </div>
+      </div>
+      <div class="insight"><strong>A HP-12C usa sempre juros compostos</strong> — padrão do mercado financeiro, bancos e empresas. Juros simples só aparecem em situações específicas (cheque, desconto comercial).</div>
+    </div>
+
+    <div class="c-card">
+      <div class="c-head">
+        <div class="c-icon">🔗</div>
+        <div><div class="c-title">A equação fundamental de valor</div><div class="c-sub">5 variáveis — você sempre conhece 4</div></div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:14px;text-align:center;padding:14px;background:var(--cream2);border-radius:10px;color:var(--ink);margin-bottom:10px">
+        PV + PMT × [(1+i)ⁿ − 1] / i + FV / (1+i)ⁿ = 0
+      </div>
+      <div class="legend-row">
+        <span class="legend-pill"><strong>PV</strong> Valor presente</span>
+        <span class="legend-pill"><strong>FV</strong> Valor futuro</span>
+        <span class="legend-pill"><strong>PMT</strong> Prestação</span>
+        <span class="legend-pill"><strong>i</strong> Taxa por período</span>
+        <span class="legend-pill"><strong>n</strong> Nº de períodos</span>
+      </div>
+      <div class="insight">A lógica é que o que você coloca (entradas) deve equilibrar o que você tira (saídas). A HP-12C resolve essa equação para qualquer uma das 5 variáveis — por isso ela pede sempre pelo menos 4 valores.</div>
+    </div>
+  </div>
+
+  <!-- FÓRMULAS -->
+  <div class="tab-pane" id="tab-formulas">
+    <div class="c-card">
+      <div class="c-head">
+        <div class="c-icon">📍</div>
+        <div><div class="c-title">Valor Presente (PV)</div><div class="c-sub">"Quanto vale hoje um valor lá na frente?"</div></div>
+      </div>
+      <div class="formula-box">PV = FV ÷ (1 + i)ⁿ</div>
+      <div class="legend-row">
+        <span class="legend-pill"><strong>FV</strong> valor a receber</span>
+        <span class="legend-pill"><strong>i</strong> taxa por período</span>
+        <span class="legend-pill"><strong>n</strong> períodos</span>
+      </div>
+      <div class="insight"><strong>Intuição:</strong> dividir por (1+i)ⁿ é o inverso de capitalizar — você está "andando para trás" no tempo, removendo os juros que teriam sido ganhos.</div>
+      <div style="font-size:12px;color:var(--ink3);margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--cream2)">
+        <strong style="color:var(--ink)">Exemplo:</strong> Você vai receber R$ 5.000 em 12 meses. Taxa: 2%/mês.<br>
+        <span style="font-family:var(--font-mono)">PV = 5.000 ÷ (1,02)¹² = 5.000 ÷ 1,2682 = <strong style="color:var(--ink)">R$ 3.942</strong></span>
+      </div>
+    </div>
+
+    <div class="c-card">
+      <div class="c-head">
+        <div class="c-icon">🚀</div>
+        <div><div class="c-title">Valor Futuro (FV)</div><div class="c-sub">"Quanto vai virar com juros compostos?"</div></div>
+      </div>
+      <div class="formula-box">FV = PV × (1 + i)ⁿ</div>
+      <div class="insight"><strong>Intuição:</strong> multiplicar por (1+i)ⁿ é capitalizar. A cada período, o valor acumulado cresce pela taxa — "juros sobre juros". O expoente n é o que torna o crescimento exponencial, não linear.</div>
+      <div style="font-size:12px;color:var(--ink3);margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--cream2)">
+        <strong style="color:var(--ink)">Exemplo:</strong> R$ 1.000 aplicados a 1,5%/mês por 24 meses:<br>
+        <span style="font-family:var(--font-mono)">FV = 1.000 × (1,015)²⁴ = 1.000 × 1,4295 = <strong style="color:var(--ink)">R$ 1.429,50</strong></span>
+      </div>
+    </div>
+
+    <div class="c-card">
+      <div class="c-head">
+        <div class="c-icon">💳</div>
+        <div><div class="c-title">Prestação (PMT) — Sistema Price</div><div class="c-sub">"Qual é a parcela fixa de um financiamento?"</div></div>
+      </div>
+      <div class="formula-box">PMT = PV × i ÷ [1 − (1+i)⁻ⁿ]</div>
+      <div class="insight"><strong>Intuição:</strong> PMT é o valor fixo que, pago n vezes a taxa i, tem VP exatamente igual a PV. Cada parcela paga <em>juros do saldo devedor + amortização</em>. No início, a maior parte é juro. No final, a maior parte é amortização — isso é a tabela Price.</div>
+    </div>
+
+    <div class="c-card">
+      <div class="c-head">
+        <div class="c-icon">🔄</div>
+        <div><div class="c-title">Taxa equivalente</div><div class="c-sub">"Como converter taxa anual em mensal de verdade?"</div></div>
+      </div>
+      <div class="formula-box">i_mensal = (1 + i_anual)^(1/12) − 1</div>
+      <div class="insight">
+        <strong>Atenção:</strong> a conversão correta é pela raiz, não pela divisão simples.<br>
+        12% a.a. ÷ 12 <strong>≠</strong> taxa mensal equivalente. Isso é taxa proporcional (só vale para juros simples).<br>
+        Correto: <span style="font-family:var(--font-mono)">(1,12)^(1/12) − 1 = 0,9489% a.m.</span><br>
+        A diferença parece pequena, mas em 10 anos vale milhares de reais.
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULADOR -->
+  <div class="tab-pane" id="tab-simulador">
+    <div class="i-card">
+      <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:16px">Juros compostos ao vivo</div>
+      <div class="slider-row">
+        <span class="sl-label">Capital inicial (R$)</span>
+        <input type="range" min="100" max="50000" step="100" value="5000" id="s-cap" oninput="calcSim()">
+        <span class="sl-val" id="v-cap">5.000</span>
+      </div>
+      <div class="slider-row">
+        <span class="sl-label">Taxa mensal (%)</span>
+        <input type="range" min="0.1" max="5" step="0.1" value="1" id="s-taxa" oninput="calcSim()">
+        <span class="sl-val" id="v-taxa">1,0%</span>
+      </div>
+      <div class="slider-row">
+        <span class="sl-label">Meses</span>
+        <input type="range" min="1" max="120" step="1" value="24" id="s-meses" oninput="calcSim()">
+        <span class="sl-val" id="v-meses">24</span>
+      </div>
+      <div class="r-grid">
+        <div class="r-cell"><div class="r-label">Capital inicial</div><div class="r-val" id="r-cap2">R$ 5.000</div></div>
+        <div class="r-cell"><div class="r-label">Valor futuro</div><div class="r-val gold" id="r-vf2">R$ 6.169</div></div>
+        <div class="r-cell"><div class="r-label">Juros ganhos</div><div class="r-val" id="r-juros2">R$ 1.169</div></div>
+        <div class="r-cell"><div class="r-label">Rendimento total</div><div class="r-val" id="r-rend2">23,4%</div></div>
+      </div>
+      <div style="margin-top:14px">
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:8px">Principal vs. juros por ano</div>
+        <div class="bar-cont" id="bar-chart"></div>
+      </div>
+    </div>
+
+    <div class="i-card">
+      <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:16px">Decomposição de parcela Price</div>
+      <div class="slider-row">
+        <span class="sl-label">Valor financiado</span>
+        <input type="range" min="1000" max="100000" step="1000" value="20000" id="p-pv" oninput="calcPMT()">
+        <span class="sl-val" id="pv-val">20.000</span>
+      </div>
+      <div class="slider-row">
+        <span class="sl-label">Taxa mensal (%)</span>
+        <input type="range" min="0.5" max="5" step="0.1" value="1.2" id="p-i" oninput="calcPMT()">
+        <span class="sl-val" id="pi-val">1,2%</span>
+      </div>
+      <div class="slider-row">
+        <span class="sl-label">Nº de parcelas</span>
+        <input type="range" min="6" max="60" step="1" value="24" id="p-n" oninput="calcPMT()">
+        <span class="sl-val" id="pn-val">24</span>
+      </div>
+      <div class="slider-row">
+        <span class="sl-label">Ver parcela nº</span>
+        <input type="range" min="1" max="24" step="1" value="1" id="p-k" oninput="calcPMT()">
+        <span class="sl-val" id="pk-val">1</span>
+      </div>
+      <div class="r-grid">
+        <div class="r-cell"><div class="r-label">Parcela total</div><div class="r-val gold" id="pmt-pmt">R$ 944</div></div>
+        <div class="r-cell"><div class="r-label">Saldo devedor</div><div class="r-val" id="pmt-saldo">R$ 20.000</div></div>
+        <div class="r-cell"><div class="r-label">Juros desta parcela</div><div class="r-val red" id="pmt-juros">R$ 240</div></div>
+        <div class="r-cell"><div class="r-label">Amortização</div><div class="r-val blue" id="pmt-amor">R$ 704</div></div>
+      </div>
+      <div style="margin-top:12px;height:14px;background:var(--cream2);border-radius:4px;overflow:hidden;display:flex">
+        <div id="bar-amor" style="height:100%;background:#378ADD44;transition:width 0.3s"></div>
+        <div id="bar-jur" style="height:100%;background:#E8593C44;transition:width 0.3s"></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:5px">
+        <span style="font-size:11px;color:#185FA5">— Amortização</span>
+        <span style="font-size:11px;color:var(--red)">— Juros</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINI QUIZ -->
+  <div class="tab-pane" id="tab-miniquiz">
+    <div class="mq-card" id="mq1">
+      <div class="mq-q">1. R$ 1.000 hoje equivale a R$ 1.000 daqui a 1 ano, desde que não haja inflação?</div>
+      <div class="mq-opts">
+        <button class="mq-opt" onclick="miniAnswer(this,'wrong','mq1')">Verdadeiro — sem inflação o valor é o mesmo</button>
+        <button class="mq-opt" onclick="miniAnswer(this,'correct','mq1')">Falso — mesmo sem inflação, dinheiro hoje vale mais pela oportunidade de investir</button>
+      </div>
+      <div class="mq-fb" id="fb-mq1">Mesmo sem inflação, R$ 1.000 hoje podem ser investidos e gerar retorno. Esperar um ano tem um custo de oportunidade real — você perde o que poderia ter ganho.</div>
+    </div>
+
+    <div class="mq-card" id="mq2">
+      <div class="mq-q">2. Para converter 12% a.a. para taxa mensal equivalente, o correto é:</div>
+      <div class="mq-opts">
+        <button class="mq-opt" onclick="miniAnswer(this,'wrong','mq2')">Dividir por 12 → 1% a.m. (taxa proporcional)</button>
+        <button class="mq-opt" onclick="miniAnswer(this,'correct','mq2')">(1,12)^(1/12) − 1 → 0,9489% a.m. (taxa equivalente)</button>
+        <button class="mq-opt" onclick="miniAnswer(this,'wrong','mq2')">São equivalentes, tanto faz para juros compostos</button>
+      </div>
+      <div class="mq-fb" id="fb-mq2">Dividir por 12 é taxa proporcional (usada em juros simples). Para juros compostos, a equivalência correta usa a raiz n-ésima. A diferença parece pequena mas em 10 anos vira milhares de reais.</div>
+    </div>
+
+    <div class="mq-card" id="mq3">
+      <div class="mq-q">3. Numa tabela Price com taxa de 2% a.m. e 12 parcelas, o que acontece com o valor dos juros a cada mês?</div>
+      <div class="mq-opts">
+        <button class="mq-opt" onclick="miniAnswer(this,'correct','mq3')">Diminui — porque o saldo devedor vai caindo a cada parcela</button>
+        <button class="mq-opt" onclick="miniAnswer(this,'wrong','mq3')">Fica constante — a taxa e a parcela são fixas</button>
+        <button class="mq-opt" onclick="miniAnswer(this,'wrong','mq3')">Aumenta — os juros compostos se acumulam</button>
+      </div>
+      <div class="mq-fb" id="fb-mq3">A parcela total é fixa, mas por dentro muda: Juros = taxa × saldo devedor. Como você amortiza parte do principal todo mês, o saldo cai, e os juros também caem. A amortização aumenta mês a mês.</div>
+    </div>
+
+    <div class="mq-card" id="mq4">
+      <div class="mq-q">4. Na HP-12C, por que o PV calculado geralmente sai negativo?</div>
+      <div class="mq-opts">
+        <button class="mq-opt" onclick="miniAnswer(this,'wrong','mq4')">É um bug — você precisa inverter o sinal manualmente sempre</button>
+        <button class="mq-opt" onclick="miniAnswer(this,'wrong','mq4')">Porque VP sempre é menor do que VF por definição</button>
+        <button class="mq-opt" onclick="miniAnswer(this,'correct','mq4')">Convenção de fluxo de caixa: negativo = saída (dinheiro que você desembolsa hoje)</button>
+      </div>
+      <div class="mq-fb" id="fb-mq4">A HP-12C usa a convenção: + é entrada de caixa, − é saída. Se você vai receber R$ 5.000 no futuro (FV positivo), o PV sai negativo porque representa o dinheiro que você teria que desembolsar hoje para obter esse retorno futuro.</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-heart">❤️</div>
+  <div class="footer-msg">Feito com carinho para <strong>Neidi</strong> arrasar na faculdade</div>
+  <div class="footer-sig">Criado por <em>Leurer</em></div>
+  <div class="footer-deco"></div>
+  <div class="footer-small">HP-12C Study · Matemática Financeira para ADM · Questões geradas por IA</div>
+</footer>
+
+<script>
+/* ── QUIZ STATE ── */
+let selLevel = 1, selTopic = 'todos';
+let questions = [], correctCount = 0, wrongCount = 0, answered = [];
+
+const levelNames = ['','Iniciante','Básico','Intermediário','Avançado','Expert'];
+const levelDesc = ['',
+  'conceitos básicos, definições e perguntas conceituais sem cálculo complexo',
+  'cálculos simples de VP e VF com valores redondos e passos diretos',
+  'cálculos de PMT, conversão de taxas, séries de pagamento',
+  'análise de projetos com TIR e VPL, amortização, decisões financeiras',
+  'questões de prova de concurso ou MBA, raciocínio complexo, armadilhas clássicas'
+];
+
+/* ── NAV ── */
+function gotoSection(id, btn) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  if (btn) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+
+/* ── QUIZ CONTROLS ── */
+function selectLevel(n, el) {
+  selLevel = n;
+  document.querySelectorAll('.level-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+function selectTopic(el, topic) {
+  selTopic = topic;
+  document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function startQuiz() {
+  const btn = document.getElementById('generate-btn');
+  const skel = document.getElementById('skeleton');
+  const err = document.getElementById('error-box');
+  btn.classList.add('loading'); btn.disabled = true;
+  skel.classList.add('show'); err.classList.remove('show');
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        level: selLevel,
+        levelName: levelNames[selLevel],
+        levelDesc: levelDesc[selLevel],
+        topic: selTopic
+      })
+    });
+    if (!res.ok) throw new Error('Erro ' + res.status);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    questions = data.questions;
+    correctCount = 0; wrongCount = 0;
+    answered = new Array(questions.length).fill(false);
+
+    skel.classList.remove('show');
+    btn.classList.remove('loading'); btn.disabled = false;
+    document.getElementById('config-section').style.display = 'none';
+    buildQuiz();
+  } catch(e) {
+    skel.classList.remove('show');
+    btn.classList.remove('loading'); btn.disabled = false;
+    err.textContent = '⚠ ' + (e.message || 'Erro ao conectar. Tente novamente.');
+    err.classList.add('show');
+  }
+}
+
+function buildQuiz() {
+  const section = document.getElementById('q-section');
+  const container = document.getElementById('q-container');
+  container.innerHTML = '';
+  const letters = ['A','B','C','D'];
+
+  questions.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'q-card'; card.id = 'qc-'+idx;
+    card.style.display = idx === 0 ? 'block' : 'none';
+
+    const opts = q.options.map((opt, i) => `
+      <button class="option" id="opt-${idx}-${i}" onclick="answerQ(${idx},${i})">
+        <span class="opt-letter">${letters[i]}</span>
+        <span>${opt}</span>
+      </button>`).join('');
+
+    card.innerHTML = `
+      <div class="q-card-head">
+        <div class="q-meta">
+          <span class="q-badge">Nível ${selLevel}</span>
+          <span class="q-topic-lbl">${q.topic}</span>
+        </div>
+        <span class="q-num">${idx+1} / ${questions.length}</span>
+      </div>
+      <div class="q-body">
+        <div class="q-text">${q.question}</div>
+        <div class="options">${opts}</div>
+        <div class="feedback" id="fb-${idx}">
+          <div class="fb-title" id="fb-t-${idx}"></div>
+          <div id="fb-b-${idx}"></div>
+        </div>
+        <div style="text-align:right">
+          <button class="next-btn" id="nb-${idx}" onclick="nextQ(${idx})">
+            ${idx < questions.length-1 ? 'Próxima →' : 'Ver resultado →'}
+          </button>
+        </div>
+      </div>`;
+    container.appendChild(card);
+  });
+
+  section.classList.add('visible');
+  updateScore();
+}
+
+function answerQ(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+  const q = questions[qIdx];
+  const ok = optIdx === q.correct;
+  if (ok) correctCount++; else wrongCount++;
+
+  for (let i = 0; i < q.options.length; i++) {
+    const b = document.getElementById('opt-'+qIdx+'-'+i);
+    b.disabled = true;
+    if (i === q.correct) b.classList.add('correct');
+    else if (i === optIdx) b.classList.add('wrong');
+  }
+
+  const fb = document.getElementById('fb-'+qIdx);
+  fb.classList.add('show', ok ? 'fb-correct' : 'fb-wrong');
+  document.getElementById('fb-t-'+qIdx).textContent = ok ? '✓ Correto!' : '✗ Não foi dessa vez';
+  document.getElementById('fb-b-'+qIdx).textContent = q.explanation;
+  document.getElementById('nb-'+qIdx).classList.add('show');
+  updateScore();
+}
+
+function nextQ(cur) {
+  document.getElementById('qc-'+cur).style.display = 'none';
+  if (cur+1 < questions.length) {
+    const next = document.getElementById('qc-'+(cur+1));
+    next.style.display = 'block';
+    next.scrollIntoView({ behavior:'smooth', block:'start' });
+  } else {
+    showResult();
+  }
+}
+
+function updateScore() {
+  const rem = questions.length - correctCount - wrongCount;
+  document.getElementById('sc-c').textContent = '✓ '+correctCount+' cert'+(correctCount===1?'a':'as');
+  document.getElementById('sc-w').textContent = '✗ '+wrongCount+' errad'+(wrongCount===1?'a':'as');
+  document.getElementById('sc-r').textContent = rem+' restante'+(rem===1?'':'s');
+  document.getElementById('prog').style.width = ((correctCount+wrongCount)/questions.length*100)+'%';
+}
+
+function showResult() {
+  document.getElementById('q-section').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('show'); rs.scrollIntoView({ behavior:'smooth', block:'start' });
+  const pct = Math.round(correctCount/questions.length*100);
+  document.getElementById('r-c').textContent = correctCount;
+  document.getElementById('r-w').textContent = wrongCount;
+  document.getElementById('r-p').textContent = pct+'%';
+  const msgs = [
+    [100,'🏆','Perfeito!','Acertou tudo! Tá dominando a HP-12C! 🎉'],
+    [80,'⭐','Muito bem!','Ótimo desempenho! Quase craque!'],
+    [60,'📈','Bom trabalho!','No caminho certo. Continua praticando!'],
+    [40,'📚','Continue estudando!','Revisa os tópicos e tenta de novo!'],
+    [0,'💪','Não desiste!','Todo expert já foi iniciante. Vai que vai!']
+  ];
+  const m = msgs.find(([min]) => pct >= min);
+  document.getElementById('r-trophy').textContent = m[1];
+  document.getElementById('r-title').textContent = m[2];
+  document.getElementById('r-sub').textContent = m[3];
+}
+
+function restart() {
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('config-section').style.display = 'block';
+  const qs = document.getElementById('q-section');
+  qs.classList.remove('visible'); qs.style.display = '';
+  document.getElementById('q-container').innerHTML = '';
+  questions = []; correctCount = 0; wrongCount = 0;
+  window.scrollTo({ top: 0, behavior:'smooth' });
+}
+
+/* ── LOGIC TABS ── */
+function showTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+/* ── SIMULATORS ── */
+function fmt(n) { return n.toLocaleString('pt-BR',{maximumFractionDigits:0}); }
+function fmtD(n,d=2) { return n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+
+function calcSim() {
+  const cap = parseFloat(document.getElementById('s-cap').value);
+  const taxa = parseFloat(document.getElementById('s-taxa').value)/100;
+  const meses = parseInt(document.getElementById('s-meses').value);
+  document.getElementById('v-cap').textContent = fmt(cap);
+  document.getElementById('v-taxa').textContent = (taxa*100).toFixed(1)+'%';
+  document.getElementById('v-meses').textContent = meses;
+  const vf = cap * Math.pow(1+taxa,meses);
+  const juros = vf - cap;
+  document.getElementById('r-cap2').textContent = 'R$ '+fmt(cap);
+  document.getElementById('r-vf2').textContent = 'R$ '+fmt(vf);
+  document.getElementById('r-juros2').textContent = 'R$ '+fmt(juros);
+  document.getElementById('r-rend2').textContent = (juros/cap*100).toFixed(1)+'%';
+  const bc = document.getElementById('bar-chart');
+  bc.innerHTML = '';
+  const anos = Math.min(Math.ceil(meses/12), 8);
+  const maxVf = cap * Math.pow(1+taxa, Math.min(meses, anos*12));
+  for(let a=1;a<=anos;a++){
+    const m = Math.min(a*12,meses);
+    const vfA = cap*Math.pow(1+taxa,m);
+    const jurA = vfA-cap;
+    const pP = Math.round(cap/maxVf*100);
+    const pJ = Math.round(jurA/maxVf*100);
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `<span class="bar-lbl">${a}a</span>
+      <div class="bar-track" style="height:20px;border-radius:4px">
+        <div style="width:${pP}%;background:#378ADD33;display:flex;align-items:center;padding:0 6px">
+          <span style="font-size:10px;color:#185FA5;white-space:nowrap">${pP>18?'Principal':''}</span>
+        </div>
+        <div style="width:${pJ}%;background:#E8C98E55;display:flex;align-items:center;padding:0 4px">
+          <span style="font-size:10px;color:var(--gold-dark);white-space:nowrap">${pJ>10?'+R$'+fmt(jurA):''}</span>
+        </div>
+      </div>`;
+    bc.appendChild(row);
+  }
+}
+
+function calcPMT() {
+  const pv = parseFloat(document.getElementById('p-pv').value);
+  const i = parseFloat(document.getElementById('p-i').value)/100;
+  const n = parseInt(document.getElementById('p-n').value);
+  let k = parseInt(document.getElementById('p-k').value);
+  document.getElementById('p-k').max = n;
+  if(k>n){ k=n; document.getElementById('p-k').value=k; }
+  document.getElementById('pv-val').textContent = fmt(pv);
+  document.getElementById('pi-val').textContent = (i*100).toFixed(1)+'%';
+  document.getElementById('pn-val').textContent = n;
+  document.getElementById('pk-val').textContent = k;
+  const pmt = pv*i/(1-Math.pow(1+i,-n));
+  let saldo = pv;
+  for(let j=1;j<k;j++){ saldo -= (pmt - saldo*i); }
+  const jK = saldo*i, aK = pmt-jK;
+  document.getElementById('pmt-pmt').textContent = 'R$ '+fmtD(pmt);
+  document.getElementById('pmt-saldo').textContent = 'R$ '+fmtD(saldo);
+  document.getElementById('pmt-juros').textContent = 'R$ '+fmtD(jK);
+  document.getElementById('pmt-amor').textContent = 'R$ '+fmtD(aK);
+  const pA = Math.round(aK/pmt*100);
+  document.getElementById('bar-amor').style.width = pA+'%';
+  document.getElementById('bar-jur').style.width = (100-pA)+'%';
+}
+
+/* ── MINI QUIZ ── */
+function miniAnswer(btn, type, qid) {
+  document.getElementById(qid).querySelectorAll('.mq-opt').forEach(b => b.disabled = true);
+  btn.classList.add(type);
+  const fb = document.getElementById('fb-'+qid);
+  fb.classList.add('show');
+  fb.style.borderLeft = type==='correct' ? '3px solid #2E7D52' : '3px solid #C0392B';
+}
+
+/* init */
+calcSim();
+calcPMT();
+</script>
+</body>
+</html>
