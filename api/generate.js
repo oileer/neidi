@@ -8,28 +8,34 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { level, levelName, levelDesc, topic } = req.body;
-
   if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(500).json({ error: 'Chave da API não configurada no servidor.' });
+    return res.status(500).json({ error: 'ANTHROPIC_API_KEY não configurada nas variáveis de ambiente da Vercel.' });
   }
+
+  // Vercel pode entregar o body como string em alguns runtimes
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch { body = {}; }
+  }
+
+  const { level, levelName, levelDesc, topic } = body || {};
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const topicStr = topic === 'todos'
     ? 'qualquer tópico de matemática financeira e HP-12C'
-    : topic;
+    : (topic || 'matemática financeira');
 
   const prompt = `Você é um professor universitário de matemática financeira para o curso de Administração de Empresas no Brasil.
 
-Gere exatamente 5 questões de múltipla escolha sobre ${topicStr} para nível ${levelName} (${levelDesc}).
+Gere exatamente 5 questões de múltipla escolha sobre ${topicStr} para nível ${levelName || 'Intermediário'} (${levelDesc || 'cálculos de PMT, conversão de taxas, séries de pagamento'}).
 
 Regras:
 - Contexto realista em reais (R$), dados do dia a dia brasileiro
 - Exatamente 4 alternativas por questão (A, B, C, D)
 - Apenas UMA alternativa correta
 - Explicação didática e completa da resposta correta
-- Nível ${level}/5: ${levelDesc}
+- Nível ${level || 3}/5
 
 Retorne APENAS JSON válido, sem texto antes ou depois:
 {
@@ -48,7 +54,7 @@ Retorne APENAS JSON válido, sem texto antes ou depois:
 
   try {
     const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-sonnet-4-5',
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -57,7 +63,7 @@ Retorne APENAS JSON válido, sem texto antes ou depois:
     const data = JSON.parse(raw);
     return res.status(200).json(data);
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Erro ao gerar questões. Tente novamente.' });
+    console.error('Erro na API:', err.message);
+    return res.status(500).json({ error: err.message || 'Erro ao gerar questões. Tente novamente.' });
   }
 };
